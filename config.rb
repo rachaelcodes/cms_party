@@ -1,11 +1,20 @@
 # Activate and configure extensions
 # https://middlemanapp.com/advanced/configuration/#configuring-extensions
+activate :dotenv, env: '.env'
 
 activate :autoprefixer do |prefix|
   prefix.browsers = "last 2 versions"
 end
 
 activate :livereload
+
+activate :contentful do |f|
+  f.access_token = ENV['ACCESS_TOKEN']
+  f.space = { catBlog: ENV['SPACE_ID']}
+  f.rebuild_on_webhook = true
+  f.cda_query     = { content_type: 'catPage', include: 1 }
+  f.content_types = {catPage: 'catPage'}
+end
 
 # Layouts
 # https://middlemanapp.com/basics/layouts/
@@ -20,6 +29,15 @@ page '/*.txt', layout: false
 
 # Proxy pages
 # https://middlemanapp.com/advanced/dynamic-pages/
+
+data.catBlog.catPage.each do |page|
+  proxy "/cat/#{page[1][:slug]}.html", "/contentful/template.html", :ignore => true, :locals => {
+    :title => page[1][:title],
+    :subheading => page[1][:subheading],
+    :imgSrc => page[1][:main_image][:url], 
+    :text => page[1][:text]
+  }
+end
 
 # proxy(
 #   '/this-page-has-no-template.html',
