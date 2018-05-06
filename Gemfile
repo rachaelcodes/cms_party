@@ -7,3 +7,4 @@ gem 'wdm', '~> 0.1', platforms: [:mswin, :mingw]
 gem "middleman-livereload", "~> 3.4.3"
 gem "contentful_middleman"
 gem 'middleman-dotenv'
+gem 'prismic.io', '~> 1.3', '>= 1.3.3', require: 'prismic'

@@ -16,6 +16,14 @@ activate :contentful do |f|
   f.content_types = {catPage: 'catPage'}
 end
 
+# Prismic Settings
+api = Prismic.api('https://prismiccmsparty.prismic.io/api')
+
+response = api.query(Prismic::Predicates.at("document.type", "beardpage"))
+prismicdocuments = response.results
+
+page "/beard/index.html", locals: {documents: prismicdocuments}
+
 # Layouts
 # https://middlemanapp.com/basics/layouts/
 
@@ -31,13 +39,24 @@ page '/*.txt', layout: false
 # https://middlemanapp.com/advanced/dynamic-pages/
 
 data.catBlog.catPage.each do |page|
-  proxy "/cat/#{page[1][:slug]}.html", "/contentful/template.html", :ignore => true, :locals => {
+  proxy "/cat/#{page[1][:slug]}.html", "/template/template.html", :ignore => true, :locals => {
     :title => page[1][:title],
     :subheading => page[1][:subheading],
     :imgSrc => page[1][:main_image][:url], 
-    :text => page[1][:text]
+    :markdown => page[1][:text]
   }
 end
+
+prismicdocuments.each do |page|
+  proxy "/beard/#{page['beardpage.slug'].as_text()}.html", "/template/template.html", :ignore => true,
+  :locals => {
+    :title => page['beardpage.title'].as_text(),
+    :subheading => page['beardpage.subheading'].as_text(),
+    :imgSrc => page['beardpage.mainimage'].url,
+    :text => page['beardpage.text'].as_html(nil).html_safe
+  }
+end
+
 
 # proxy(
 #   '/this-page-has-no-template.html',

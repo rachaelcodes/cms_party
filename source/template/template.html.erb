@@ -9,11 +9,16 @@ title: Welcome to Middleman
         <h3 class="f2 fw7 ttu tracked lh-title mt0 mb3 avenir"><%= title %></h3>
         <h4 class="f3 fw4 i lh-title mt0"><%= subheading %></h4>
       </header>
+      
       <section class="pt5 pb4">
         <p class="times lh-copy measure f4 mt0">
-          <%= partial "partials/content"  %>
+          <% if defined?markdown %>
+            <%= partial "partials/content"  %>
+          <% elsif defined?text %>
+            <%= text %>
+          <% end %>
         </p>
-      </section>
+      </section>     
     </div>
   </div>
 </article>
